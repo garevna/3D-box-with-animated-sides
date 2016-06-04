@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DHTML</title>
+<meta name="description" content="It will be changed"/>
+<meta name="keywords" content="It will be changed"/>
+<meta http-equiv="Cache-Control" content="no-Cache" />
+<meta name="viewport" content="width=device-width" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link rel="stylesheet" href="/css/styles_new.css" />
+<link rel="stylesheet" href="/css/work-panel.css" />
+<link rel="stylesheet" href="/css/buttons.css" />
+<link rel="stylesheet" href="/css/news.css" />
+<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.4/TweenMax.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.4/plugins/CSSPlugin.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.4/easing/EasePack.min.js"></script>
+<!-- <script src="/js/resize.js"></script> -->
+<script src="/js/news.js"></script>
+<!--<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery-1.9.1.js"></script>-->
+
+<!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+<style>
+    #scene { margin: 20px 10px 80px 10px; }
+	#panel_tooltip { padding:3px 8px; background-color:#eef; border: groove 1px white; font-family:Gotham, "Helvetica Neue", Helvetica, Arial, sans-serif; font-size:11px; color:#242424; }
+	/* ::-webkit-scrollbar { width: 0px; } */
+</style>
+
+<script>
+// ===============================================================================================================
+//                                           Panel Constructor
+// ===============================================================================================================
+var workPanel = {
+	panel_hidden: false,
+	panelHeader: '',
+	menuItems: [],
+	folderVars: [],         // state:0, form:0, header:'', content: [src_num1, src_num2...]
+	folders: [],            // DOM elements - containers for menu items
+	panel:undefined,        // DOM element - container for DOM elements panelTop & panelContent
+	panelTop:undefined,     // DOM element
+	panelContent:undefined, // DOM element - container for DOM elements folders
+	// -------------------------------------------------------------------------------------- Method getStructure()
+	getStructure: function () {
+
+		if (this.menuItems==undefined) { alert('getStructure Error: main container does not exist'); return false; }
+		var folderNum;
+		var _folder = { header:'', content:[] };
+		for (var j=0; j < this.menuItems.length; j++) {
+			folderNum = -1;
+			for (var k = 0; k < this.folderVars.length; k++) {
+				if (this.folderVars[k].header === this.menuItems[j].folder_name) {
+					this.folderVars[k].content.push(j);
+					folderNum = k;
+					break;
+				}
+			}
+			if (folderNum == -1) {
+				_folder = { header:this.menuItems[j].folder_name, content:[] };
+				_folder.content.push(j);
+				this.folderVars.push(_folder);
+			}
+		}
+	},
+	// ----------------------------- folders structure ---------------------------------------------------------
+    // workPanel.folders[j]                                DOM element
+    // workPanel.folders[j].head                           DOM element (child of workPanel.folders[j])
+    // workPanel.folders[j].stateButton                    DOM element (child of workPanel.folders[j].head)
+    // workPanel.folders[j].formButton                     DOM element (child of workPanel.folders[j].head)
+    // workPanel.folders[j].content                        DOM element (child of workPanel.folders[j])
+    // workPanel.folders[j].content.elem[i]                DOM element (child of workPanel.folders[j].content)
+   
+    // workPanel.folders[j].form                           value (0 || 1)
+    // workPanel.folders[j].state                          value (0 || 1)
+    // workPanel.folderVars[j].header                      string (folder header)
+	// -------------------------------------------------------------------------------- createDomElements() method
+	createDomElements: function() {
+		this.panel = this.createPanel();
+		this.panelTop = this.createPanelTop();
+		this.getStructure();
+		this.panelContent = this.createPanelContent();
+		// ------------------------------------------------------------------------ addFolderHeadElement method
+		this.addFolderHeadElement = function(folderNum) {
+			var _folderHead = document.createElement('div');
+			this.folders[folderNum].appendChild(_folderHead);
+			_folderHead.className = "panel-name";
+			return _folderHead;
+		}
+		// ----------------------------------------------------------------------- add FolderStateButton method
+		this.addFolderStateButton = function(folderNum) {
+			var _folderStateButton = document.createElement('button');
+			this.folders[folderNum].head.appendChild(_folderStateButton);
+			_folderStateButton.className = "folderStateButton";
+			_folderStateButton.innerHTML = workPanel.folderStates()[0].lbl;
+			_folderStateButton.setAttribute('title', workPanel.folderStates()[0].titl);
+			// --------------------------------------------------------------- FolderStateButton onClick
+			_folderStateButton.onclick = function() {
+				var _folder = this.parentNode.parentNode;				    // folder element
+				_folder.state = (_folder.state == 0)?(1):(0);               // change folder state property
+				var _state = _folder.state;				                    // folder state property
+				var _content = this.parentNode.parentNode.content;          // folder content element
+				// ----------------------------- Animation ---------------------------------------------------
+				if (_state == 1) { TweenLite.to(_content, 1, { height:"0", opacity:"0", display:"none" }); }
+				else { TweenLite.to(_content, 1, { height:"auto", opacity:"1", display:"block" }); }
+				// -------------------------------------------------------------------------------------------
+				this.innerHTML = workPanel.folderStates()[_state].lbl;
+				this.setAttribute('title', workPanel.folderStates()[_state].titl);
+			}
+			this.folders[folderNum].stateButton = _folderStateButton;
+		}
+		// ----------------------------------------------------------------------- add FolderFormButton method
+		this.addFolderFormButton = function(folderNum) {
+			var _folderFormButton = document.createElement('button');
+			this.folders[folderNum].head.appendChild(_folderFormButton);
+			_folderFormButton.className = "folderFormButton";
+			// --------------------------------------------------------------- FolderFormButton onClick
+			_folderFormButton.onclick = function() {
+				var _folder = this.parentNode.parentNode;				    // folder element
+				_folder.form = (_folder.form == 0)?(1):(0);                 // change folder form property
+				var _content = this.parentNode.parentNode.content;          // folder content element
+		        // --------- change button appearance ------------
+		        this.style.backgroundImage = 'url(' + workPanel.folderForms()[_folder.form].$img + ')';
+		        this.setAttribute('title', workPanel.folderForms()[_folder.form].titl);
+		        // ---------- change folder appearance ------------
+				var items = _content.childNodes;
+				var z;
+				for (var j=0; j<items.length; j++)
+				{
+					z = items[j].getElementsByTagName('span').item(0);
+					z.style.display = (_folder.form == 1)?('none'):('inline');
+					items[j].className = (_folder.form == 1)?('work-panel-elem-short'):('work-panel-elem');
+				}
+			}
+		}
+		// -----------------------------------------------
+		for (var j=0; j<this.folderVars.length; j++) { 
+		    
+			this.folders[j] = this.createFolderElement(j);
+			this.folders[j].state = 0;
+			this.folders[j].form = 0;
+			this.folders[j].head = this.addFolderHeadElement(j);
+			this.folders[j].stateButton = this.addFolderStateButton(j);
+			var h = document.createElement('span');
+			h.innerHTML = this.folderVars[j].header;
+			this.folders[j].head.appendChild(h);
+			this.folders[j].formButton = this.addFolderFormButton(j);
+			this.folders[j].content = this.folders[j].appendChild(document.createElement('div'));
+			this.addFolderContent(j);
+		}
+	},
+	// --------------------------------------------------------------------------------------- Panel (DOM element)
+	createPanel: function() {
+		var main = document.getElementsByTagName("main").item(0);
+		if (!main) { alert('createPanel Error: main container undefined!'); return }
+		var panel = document.createElement('div');
+        main.appendChild(panel);
+        panel.id = "work_panel";
+		panel.className = "work-panel";
+        return panel;
+	},
+	// ----------------------------------------------------------------------------------- Panel Top (DOM element)
+	createPanelTop: function() {
+		var panelTop = document.createElement('div');
+		this.panel.appendChild(panelTop);
+		panelTop.className = "panel-top";
+		panelTop.id = "panel-top";
+		// ------------------------------------------------------------------------- panel Top Show (Method)
+	    panelTop.showPanelTopElement = function ()
+		{
+			var h = (!workPanel.panel_hidden)?("&raquo;"):("&laquo;");
+			panelTop.setAttribute("title", (workPanel.panel_hidden)?("Показать"):("Свернуть"));
+			panelTop.innerHTML = '&nbsp;&nbsp;' + h + '&nbsp;&nbsp;' + workPanel.panelHeader;
+		}
+		panelTop.showPanelTopElement();
+		// ------------------------------------------------------------------ event 'click' of panelTop element
+		panelTop.onclick = function() {
+			// ------------------------------------------------------------ hide Panel (method)
+			var panel = this.parentNode;
+			workPanel.panel_hidden = !workPanel.panel_hidden;
+			this.showPanelTopElement();
+			var w = this.parentNode.getBoundingClientRect().width;
+			// --------------- animation -----------------------------
+			if (!workPanel.panel_hidden) { TweenLite.to(panel, 1, { right:"0px" }); }
+			else { TweenLite.to(panel, 1, { right:(30-w) + 'px' }); }
+		}
+		return panelTop;
+	},
+	// ------------------------------------------------------------------------------- Panel Content (DOM element)
+	createPanelContent: function() {
+		var panelContent = document.createElement('div');
+		this.panel.appendChild(panelContent);
+		panelContent.id = "panel-content";
+		return panelContent;
+	},
+   // ------------------------------------------------------------------------------------------- createFolderElement
+   createFolderElement: function(folderNum) {
+	   if (!this.panelContent) { console.log('addFolderElement: Unable to add folder!'); return false; }
+	   var _folder = document.createElement('div');
+	   this.panelContent.appendChild(_folder);
+	   _folder.id = 'folder_' + folderNum;
+	   return _folder;
+   },
+   // ----------------------------------------------------------------------------------------- addFolderContent
+   addFolderContent: function(folderNum) {
+	   var itemVars = this.folderVars[folderNum];
+	   var fc = document.createElement('div');
+	   this.folders[folderNum].appendChild(fc);
+	   this.folders[folderNum].content = fc;
+	   this.folders[folderNum].content.elem = [];
+	   
+	   var $form = (this.folders[folderNum].form)?(this.folders[folderNum].form):(0);
+	   var elem, btn, txt, elemVar;
+	   
+	   for (var j=0; j < itemVars.content.length; j++) {
+		   elemVar = this.menuItems[ itemVars.content[j] ];
+		   elem = document.createElement('div');
+		   elem.className = "work-panel-elem";
+		   this.folders[folderNum].content.appendChild(elem);    // DOM element
+		   this.folders[folderNum].content.elem.push(elem);      // reference to DOM element (array item)
+		   btn = document.createElement('button');
+		   elem.appendChild(btn);
+		   btn.className = this.getButtonType(elemVar);
+		   btn.ref = elemVar.ref;
+		   btn.refType = elemVar.type;
+		   var tooltipText = (elemVar.h_text)?(elemVar.h_text):(elemVar.item_name);
+		   btn._tooltip = new ElemTooltip(btn, tooltipText);
+		   // ---------------------------------------------------------------- onclick
+		   btn.onclick = function () {
+			   var btn = event.target;
+			   mainScene.generateMethod(btn.refType, btn.ref).call();
+		   }
+		   txt = document.createElement('span');
+		   elem.appendChild(txt);
+		   txt.innerHTML = elemVar.item_name;
+		   
+		   elem.item_name = txt;
+		   btn.style.display = 'inlineBlock';
+		   btn.style.marginRight = "5px";
+		   elem.item_name.display = (itemVars.form == 1)?('none'):('inlineBlock');
+	   }
+   },
+   // --------------------------------------------------------------------- folderForms (array)
+   folderForms: (function() {
+		var folder_forms = [
+		    { $img:'/buttons/menu_buttons.png', titl:'Краткая форма (в виде кнопок)' },
+	        { $img:'/buttons/menu-list.png', titl:'Развернутая форма (список)' } ];
+		return function(j) { if (j!==0&&j!==1) { return folder_forms } else { return folder_forms[j] } }
+	})(),
+   // -------------------------------------------------------------------- folderStates (array)
+   folderStates: (function() {
+		var folder_states = [ { lbl:'&#9650;', titl:'Скрыть содержимое папки' },
+	                          { lbl:'&#9660;', titl:'Показать содержимое папки' } ];
+		return function () { return folder_states }
+   })(),
+   // ================================================================================================== getButtonType
+	getButtonType: function(elem) {
+		var button_type = [];
+		button_type['presentation'] = 'google_slides';
+		button_type['frame'] = undefined;
+		button_type['video'] = 'youtube';
+		button_type['google_disk'] = 'google_disk';
+		button_type['div'] = undefined;
+		button_type['window'] = undefined;
+		button_type['function'] = undefined;
+		var bt = (button_type[elem.type])?(button_type[elem.type]):((elem.button_type)?(elem.button_type):('show'));
+		if (bt == 'show') { console.log('Не определен тип элемента меню:' + elem.item_name); }
+		return "button_" + bt;
+	},
+   showFolderContent: function(folderNum) {
+	   
+   }
+}
+</script>
+
+</head>
+
+<body></body>
+
+<script>
+// ===============================================================================================================
+//                                            Main scene Constructor
+// ===============================================================================================================
+var mainScene = {
+	
+	src: undefined,
+	listParams: { containerId:"scene", w:100, h:100, video:false, frame:false },
+	createContainer: (function()
+	{
+		var mainScene = document.createElement('main');
+		document.getElementsByTagName('body').item(0).appendChild(mainScene);
+		mainScene.id = "mainScene";
+		var scene = document.createElement('div');
+		mainScene.appendChild(scene);
+		scene.id = "scene";
+		var json_container = document.createElement('div');
+		document.getElementsByTagName('body').item(0).appendChild(json_container);
+		json_container.id = "json_container";
+	})(),
+	// ----------------------------------------------------------------------------------------------- loadScript
+	loadScript: function(scriptURL, func) { 
+		if (window.XMLHttpRequest) { func = new XMLHttpRequest(); }
+		else { func = new ActiveXObject("Microsoft.XMLHTTP"); }
+		func.onreadystatechange = function() {
+			if (func.readyState == 4 && func.status == 200) {
+				var funcRet = func.responseText;
+				var script_obj = document.createElement('script');
+				var script_txt = document.createTextNode(funcRet);
+				document.getElementsByTagName('head').item(0).appendChild(script_obj);
+				script_obj.appendChild(script_txt);
+			}
+			else {
+				if (func.status == 404 && func.readyState == 4) {
+					alert("Отсутствуют необходимые библиотеки: " + scriptURL);
+				}
+				else { console.log(scriptURL + ' in process'); }
+			}
+		}
+		func.open("GET", scriptURL, true);
+		func.send();
+	},
+	// ---------------------------------------------------------------------------------------------------- loadData
+	loadData: (function() {
+		var jsonUrl = '/data_files/' + location.hash.substring(1)+'.json';
+		if (window.XMLHttpRequest) { requestJSON = new XMLHttpRequest(); }
+		else { requestJSON = new ActiveXObject("Microsoft.XMLHTTP"); }
+		requestJSON.onreadystatechange = function() {
+		  if (requestJSON.readyState == 4 && requestJSON.status == 200) {
+			  var $data = JSON.parse(requestJSON.responseText);
+			  workPanel.menuItems = $data.src;
+			  workPanel.panelHeader = $data.menu_title;
+			  var func = [];
+			  if($data.functions) {
+				  for (var j=0; j<$data.functions.length; j++) {
+					  mainScene.loadScript($data.functions[j], func[j]);
+				  }
+			  }
+			  if($data.styles) {
+				  var sheet = document.createElement('style');
+				  sheet.innerHTML = $data.styles;
+				  var head = document.getElementsByTagName ("head")[0];
+				  head.appendChild(sheet);
+			  }
+			  if($data.styleSheets) {
+				  for (var j=0; j<$data.styleSheets.length; j++) {
+					  var lnk = document.createElement("link");
+					  lnk.rel = "stylesheet";
+					  lnk.href = $data.styleSheets[j];
+					  document.getElementsByTagName('head').item(0).appendChild(lnk);
+				  }
+			  }
+			  document.getElementsByTagName('title').item(0).innerHTML = $data.page_title;
+			  var meta = document.getElementsByTagName("meta");
+			  for (var j=0; j < meta.length; j++) {
+				  if (meta.item(j).name == "description") { meta.item(j).content =  $data.meta_descr; }
+				  if (meta.item(j).name == "keywords") { meta.item(j).content =  $data.meta_keywords; }
+			  }
+			  workPanel.createDomElements();
+		  }
+		  else { 
+			  if (requestJSON.status == 404 && requestJSON.readyState == 4) { alert("Извините, файл не обнаружен"); return }
+		  }
+      }
+      requestJSON.open("GET", jsonUrl, true);
+      requestJSON.send();
+	})(),
+	// =================================================================================================================
+	//            Полиморфная функция generateMethod
+	//            Вызов: var showSrc = generateMethod(elem_type, ref); showSrc.call();
+	//            или: generateMethod(elem_type, ref).call();
+	// ================================================================================================== generateMethod
+	generateMethod: function (elem_type, ref) {
+		//var scene = document.getElementById("scene");
+		//var main = document.getElementsByTagName("main").item(0);
+		mainScene.listParams.frame = false;
+		mainScene.listParams.video = false;
+		var func = {};
+		func['presentation'] = function(ref) {
+			var $url = "https://docs.google.com/presentation/d/" + ref + "/pub?start=true&loop=true&delayms=60000";
+			window.open($url, '_blank');
+		};
+		func['frame'] = function(ref) {
+			var $url = '<iframe src="' + ref + '" id="local_frame"></iframe>';
+			document.getElementById("scene").innerHTML = $url;
+			mainScene.listParams.frame = true;
+			mainScene.browserResize(mainScene.listParams);
+		};
+		func['video'] = function(ref) {
+			var $url = "<object width='1364' height='738'><param name='movie' value='http://www.youtube.com/v/" + ref;
+			$url += '?version=3&autoplay=1&loop=1&playlist=' + ref + "'></param><embed src='http://www.youtube.com/v/";
+			$url += ref + "?version=3&autoplay=1&loop=1&playlist=" + ref;
+			$url += "' type='application/x-shockwave-flash' width='100%' height='100%'></embed></object>";
+			mainScene.scene.innerHTML = $url;
+			mainScene.listParams.video = true;
+			mainScene.browserResize(mainScene.listParams);
+		};
+		func['google_disk'] = function(ref) {
+			var $url = "https://drive.google.com/folderview?id=" + ref + '&usp=sharing';
+			window.open($url, '_blank');
+		};
+		func['div'] = function(ref) {
+			var $url = (ref.split("&lt;").join("<")).split("&gt;").join(">");
+			mainScene.scene.innerHTML = ref;
+		};
+		func['window'] = function(ref) { window.open(ref, '_blank'); };
+		func['function'] = function(ref) { eval(ref); }
+		// -----------------------------------------------------------------------------
+		return function() {   return func[elem_type](ref);   };
+	},
+	// ================================================================================================== browserResize
+	browserResize: function () {
+		
+		if (!mainScene.listParams) {
+			alert('There is no property listParams of object ' + mainScene.tagName); return false; 
+		}
+		mainScene.listParams.containerId = mainScene.listParams.containerId || "local_frame";
+		// проверка на существование контейнера
+		if (!document.getElementById(mainScene.listParams.containerId)) {
+			alert('Resizing container does not exist');
+			return false;
+		}
+		
+		mainScene.listParams.w = mainScene.listParams.w || 100;
+		mainScene.listParams.h = mainScene.listParams.h || 100;
+		
+		var _width = window.innerWidth - mainScene.listParams.w;
+		var _height = window.innerHeight - mainScene.listParams.h;
+		var _margin = Math.round(mainScene.listParams.w/2);
+		
+		if (mainScene.listParams.video)
+		{
+			_height = Math.min(_height, (_width * 9/16));
+			_width = _height * 16/9;
+			_margin = Math.round((window.innerWidth - _width)/2);
+		}
+		document.getElementById(mainScene.listParams.containerId).style.width = _width + 'px';
+		document.getElementById(mainScene.listParams.containerId).style.marginLeft = _margin + 'px';
+		document.getElementById(mainScene.listParams.containerId).style.height = _height + 'px';
+		document.getElementById(mainScene.listParams.containerId).style.marginBottom = mainScene.listParams.h + 'px';
+		if (mainScene.listParams.frame)
+		{
+			var frameId = mainScene.listParams.frameId || "local_frame";
+			var frameObj = document.getElementById(frameId);
+			frameObj.style.width = _width + 'px';
+			frameObj.style.height = _height + 'px';
+			frameObj.height = frameObj.contentWindow.document.body.scrollHeight + 4 + 'px';
+		}
+		if (document.getElementById("css-panel"))
+		{
+			var _css = document.getElementById("css-panel");
+			cssPanelHeight = _css.getBoundingClientRect().bottom - _css.getBoundingClientRect().top;
+		}
+		if (document.getElementById("html-panel"))
+		{
+			var _html = document.getElementById("html-panel");
+			htmlPanelHeight = _html.getBoundingClientRect().bottom - _html.getBoundingClientRect().top;
+		}
+	}
+}
+	// ================================================================================================
+	//
+	//  Функция показа всплывающей подсказки (идентификатор объекта подсказки hlp_id) с текстом elem_text
+	//  Объект подсказки <div id="hlp" class="hlp"></div>
+	//
+	// ------------------------------------------------------------------------------------------------
+	function ElemTooltip(elem, tooltip_text) {
+		console.log(elem);
+		// this.hlpId = "panel_tooltip";
+		elem.onmouseout = function() {
+			child = document.getElementById('hlpTooltip');
+			if (child) { elem.removeChild(child); }
+		}
+		elem.onmouseover = function(event) {
+			var x = (event.pageX)?(event.pageX - window.pageXOffset):(event.clientX);
+			var y = (event.pageY)?(event.pageY - window.pageYOffset):(event.clientY);
+			var hlp = document.createElement("div");
+			var txtNode = document.createTextNode(tooltip_text);
+			hlp.id = "hlpTooltip";
+			hlp.style.position = "fixed";
+			hlp.style.left = x + "px";
+			hlp.style.top = y + "px";
+			hlp.style.minWidth = "150px";
+			hlp.style.backgroundColor = "rgba(255,255,255,0.9)";
+			hlp.style.border = "solid 1px #aaa";
+			hlp.style.borderRadius = "5px";
+			hlp.style.padding = "3px 7px";
+			hlp.style.boxShadow = "2px 2px 2px rgba(0,0,0,0.5)";
+			hlp.appendChild(txtNode);
+			elem.appendChild(hlp);
+			var bcr = hlp.getBoundingClientRect();
+			x = (x + bcr.width > window.innerWidth)?(x - (bcr.right - window.innerWidth + 20)):(x);
+			y = (y + bcr.height > window.innerHeight)?(y - (bcr.bottom - window.innerHeight + 20)):(y);
+			hlp.style.left = x + "px";
+			hlp.style.top = y + "px";
+		}
+	}
+
+// =====================================================================================================
+
+if (window.addEventListener) {              
+        window.addEventListener("resize", mainScene.browserResize);
+        window.addEventListener("load", mainScene.browserResize);
+} else if (window.attachEvent) {                 
+        window.attachEvent("onresize", mainScene.browserResize);
+        window.attachEvent("onload", mainScene.browserResize);
+}
+</script>
+</body>
+</html>
