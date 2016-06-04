@@ -1,0 +1,18 @@
+JSON: {
+"page_title":"...",
+"meta_descr":"...",
+"functions":["...","...","..." ...],
+"styleSheets":["...","..." ...],
+"styles":"...",
+"menu_title":"...",
+"src":[
+        { "ref":"...", "type":"...", "folder_name":"...", "item_name":"...", "button_type":"...", "h_text":"..."},
+        { "ref":"...", "type":"...", "folder_name":"...", "item_name":"...", "button_type":"..."},
+        { "ref":"...","type":"...","folder_name":"...","item_name":"...","button_type":"..."},
+        ...],
+"news":[]
+}
+Avaliable values:
+src[x].type:        function | frame | window | google_disk | video | google_slides
+src[x].button_type: download | google_disk | google_slides | settings | scheme | video | work | lecture | flash | design | homework | ...
+
