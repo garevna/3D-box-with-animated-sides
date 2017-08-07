@@ -1,0 +1,3 @@
+The way to organize content in compact mode due to top section, left section, right section and bottom section
+being rotated in 3D space of parent container.
+When the mouse poiner comes to the section the last one will turn to normal state and user can see its content better
