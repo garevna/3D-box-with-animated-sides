@@ -1,17 +1,3 @@
-.button_show, .button_show:hover                         { background-image:url("/buttons/eye-opened.png"); }
-.button_hide, .button_hide:hover                         { background-image:url("/buttons/eye-closed.png"); }
-.button_flash, .button_flash:hover                       { background-image:url("/buttons/swf_ico.png"); }
-.flash_button, .flash_button:hover                       { background-image:url("/buttons/adobe_flash.png"); }
-.button_homework, .button_homework:hover                 { background-image:url("/buttons/work.png"); }
-.button_download, .button_download:hover                 { background-image:url("/buttons/download.png"); }
-.button_lecture, .button_lecture:hover                   { background-image:url("/buttons/lecture.png"); }
-.button_video, .button_video:hover                       { background-image:url("/buttons/video.png"); }
-.button_google_disk, .button_google_disk:hover           { background-image:url("/buttons/google_drive.png"); }
-.button_google_slides, .button_google_slides:hover       { background-image:url("/buttons/google_slides.png"); }
-.button_youtube, .button_youtube:hover                   { background-image:url("/buttons/you-tube.png"); }
-.button_work, .button_work:hover                         { background-image:url("/buttons/work-1.png"); }
-.button_scheme, .button_scheme:hover                     { background-image:url("/buttons/scheme.png"); }
-.button_design, .button_design:hover                     { background-image:url("/buttons/work_design.png"); }
-.button_mouse, .button_mouse:hover                       { background-image:url("/buttons/mouse.png"); }
-.button_settings, .button_settings:hover                 { background-image:url("/buttons/settings.png"); }
-.button_process, .button_process:hover                   { background-image:url("/buttons/comp_process.png"); }
+The way to organize content in compact mode due to top section, left section, right section and bottom section
+being rotated in 3D space of parent container.
+When the mouse poiner comes to the section the last one will turn to normal state and user can see its content better
