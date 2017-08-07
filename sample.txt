@@ -1,0 +1,7 @@
+Loading JavaScript Files</h3><p>Large applications often require a number of JavaScript files.
+Generally, they are loaded one by one using &lt;script> tags.
+Additionally, each file can potentially be dependent on other files.
+The most common example would be jQuery plugins, which are all dependent upon the core jQuery library.
+Therefore, jQuery must be loaded before any of its plugins.
+Let’s look at a simple example of JavaScript file loading in real applications.
+Assume we have the following three JavaScript files.
