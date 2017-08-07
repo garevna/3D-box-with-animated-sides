@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>3d box</title>
+<script src="box3dConstructor.js"></script>
+</head>
+
+<body>
+    
+<script>
+
+	var container = document.createElement ( 'section' );
+	document.body.appendChild ( container );
+	var params = {
+		parent: container,
+		sides: [
+			{
+				position: 'left',
+				contentType: 'img',
+				contentURL: 'https://pbs.twimg.com/profile_images/849824952798781440/yX8EJV4v.jpg'
+			},
+			{
+				position: 'right',
+				contentType: 'img',
+				contentURL: 'https://s-media-cache-ak0.pinimg.com/736x/a8/c3/bf/a8c3bf4028b92f9905a6a67136be62b2--pictures-of-sunset.jpg'
+			},
+			{
+				position: 'top',
+				contentType: 'text',
+				content: 'Modular programming is used to break large applications into smaller blocks of manageable code. Module based coding eases the effort for maintenance and increases reusability. However, managing dependencies between modules is a major concern developers face throughout the application development process. RequireJS is one of the most popular frameworks around for managing dependencies between modules. This tutorial examines the need for modularized code, and shows how RequireJS can help.'
+			},
+			{
+				position: 'bottom',
+				contentType: 'text',
+				contentURL: 'sample.txt'
+			}
+		]
+	};
+	var box = new PerspectiveSideConstructor ( params );
+	</script>
+
+</body>
+</html>
