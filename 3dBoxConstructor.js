@@ -75,7 +75,6 @@ PerspectiveBoxConstructor.prototype.createSide = function ( params ) {
 							this.__parent__.innerHTML = this.responseText;
 						}
 						else { console.error ( 'File processing error: ' + this.fileURL ); }
-						this.terminate ();
 					}
 				}
 				__side__.__content__.request.open('GET', __side__.__content__.request.fileURL );
