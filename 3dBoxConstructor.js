@@ -196,14 +196,18 @@ PerspectiveSideConstructor.prototype.cssResize = function () {
 		var tstBottom = ( rule.name.indexOf ( 'bottom' ) >= 0 );
 		
 		var side = tstLeft ? 'left' : ( tstRight ? 'right' : ( tstTop ? 'top' : 'bottom' ) );
-		// var _class = this.classes [ side ];
+		if ( !this.__sides__ [ side ] ) continue;
 		var elem = this.__sides__ [ side ];
 		
-		var size = 0;
 		if ( elem.__content__.size ) {
+			var wp = elem.__content__.size.width;
+			var hp = elem.__content__.size.height;
+			var w = this.__parent__.offsetWidth;
+			var h = this.__parent__.offsetHeight;
+			wp /= ( hp / h > wp / w ) ? ( hp / h ) : 1;
 			size = [
-				Math.round ( Math.min ( window.innerWidth * 0.5, elem.__content__.size.width ) ) + "px",
-				Math.round ( Math.min ( window.innerHeight * 0.5, elem.__content__.size.height ) ) + "px"
+				Math.round ( Math.min ( w * 0.5, wp ) ) + "px",
+				Math.round ( Math.min ( h * 0.5, hp ) ) + "px"
 			];
 		} else { 
 			size = [ "50%", "50%" ];
