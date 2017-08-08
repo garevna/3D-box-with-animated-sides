@@ -1,4 +1,4 @@
-PerspectiveSideConstructor = function ( params ) {
+PerspectiveBoxConstructor = function ( params ) {
 		
 		this.__parent__ = params.parent || document.body;		
 		this.__sides__ = {};
@@ -29,7 +29,7 @@ PerspectiveSideConstructor = function ( params ) {
 	return this;
 }
 
-PerspectiveSideConstructor.prototype.testImageSize = function ( imageURL, obj ) {
+PerspectiveBoxConstructor.prototype.testImageSize = function ( imageURL, obj ) {
 		var picture = new Image ();
 		picture.src = imageURL;
 		picture.targetObject = obj;
@@ -42,7 +42,7 @@ PerspectiveSideConstructor.prototype.testImageSize = function ( imageURL, obj ) 
 // ===========================================================================================
 //                                C R E A T E    S I D E
 // ===========================================================================================
-PerspectiveSideConstructor.prototype.createSide = function ( params ) {
+PerspectiveBoxConstructor.prototype.createSide = function ( params ) {
 	
 		if ( !params.position ) { return null; }
 		this.__sides__ [ params.position ] = document.createElement ( 'div' );
@@ -91,9 +91,10 @@ PerspectiveSideConstructor.prototype.createSide = function ( params ) {
 			var name = prefix + "SideTurnO" + chr;
 			event.target.style.animation = name + " 2s forwards";
 		}
+	this.cssResize ();
 }
  
-PerspectiveSideConstructor.prototype.cssInit = function () {
+PerspectiveBoxConstructor.prototype.cssInit = function () {
 		this.classes = {
 			container: "garevna_perspectiveContainer",
 			left: "garevna_perspectiveLeftSide",
@@ -183,7 +184,7 @@ PerspectiveSideConstructor.prototype.cssInit = function () {
 		}
 }
 
-PerspectiveSideConstructor.prototype.cssResize = function () {
+PerspectiveBoxConstructor.prototype.cssResize = function () {
 	
 	var sheet = document.getElementById ( "keyFramesOfPerspective" ).sheet;
 	for ( var i = 0; i < sheet.rules.length; i++ ) {
