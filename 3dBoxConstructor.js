@@ -68,10 +68,11 @@ PerspectiveSideConstructor.prototype.createSide = function ( params ) {
 				__side__.__content__.request = new XMLHttpRequest ();
 				// __side__.__content__.request.answerContainer = __side__.__content__;
 				__side__.__content__.request.fileURL = params.contentURL;
+				__side__.__content__.request.__parent__ = __side__.__content__;
 				__side__.__content__.request.onreadystatechange = function () {
 					if ( this.readyState == 4 ) {
 						if ( this.status == 200 ) {
-							this.innerHTML = this.responseText;
+							this.__parent__.innerHTML = this.responseText;
 						}
 						else { console.error ( 'File processing error: ' + this.fileURL ); }
 						this.terminate ();
