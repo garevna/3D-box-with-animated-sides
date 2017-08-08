@@ -35,7 +35,6 @@ PerspectiveSideConstructor.prototype.testImageSize = function ( imageURL, obj ) 
 		picture.targetObject = obj;
 		picture.onload = function ( event ) {
 			event.target.targetObject.size = { width: picture.offsetWidth, height: picture.offsetHeight };
-			console.log ( imageURL, ' size: ', event.target.targetObject.size );
 			document.body.removeChild ( event.target );
 		}
 		document.body.appendChild ( picture );
@@ -70,8 +69,8 @@ PerspectiveSideConstructor.prototype.createSide = function ( params ) {
 				// __side__.__content__.request.answerContainer = __side__.__content__;
 				__side__.__content__.request.fileURL = params.contentURL;
 				__side__.__content__.request.onreadystatechange = function () {
-					if ( this.status == 4 ) {
-						if ( this.readyState == 200 ) {
+					if ( this.readyState == 4 ) {
+						if ( this.status == 200 ) {
 							this.innerHTML = this.responseText;
 						}
 						else { console.error ( 'File processing error: ' + this.fileURL ); }
