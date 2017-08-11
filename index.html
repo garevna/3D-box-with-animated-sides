@@ -12,28 +12,42 @@
 
 	var container = document.createElement ( 'section' );
 	document.body.appendChild ( container );
+	// Next params are not compulsory
+	container.style.position = "fixed";
+	container.style.top = "10%";
+	container.style.bottom = "10%";
+	container.style.left = "10%";
+	container.style.right = "10%";
+	container.style.backgroundColor = "#99d";
 	var params = {
 		parent: container,
+		backgroundColor: "rgba(255,255,255,0.8)",  	// not compulsory
+		color:"#333",  					// not compulsory
+		border:"inset 1px",  				// not compulsory
+		boxShadow:"inset 3px 3px 10px rgba(0,0,0,0.5)", // not compulsory
+		//scrollbarColor: "#aef",
+		//backgroundColor:"#ddf",
+		mainContentURL: "/text_files/myInfo.txt",
 		sides: [
 			{
 				position: 'left',
 				contentType: 'img',
-				contentURL: 'https://pbs.twimg.com/profile_images/849824952798781440/yX8EJV4v.jpg'
+				contentURL: '/images/my_photo_1.jpg'
 			},
 			{
 				position: 'right',
 				contentType: 'img',
-				contentURL: 'https://s-media-cache-ak0.pinimg.com/736x/a8/c3/bf/a8c3bf4028b92f9905a6a67136be62b2--pictures-of-sunset.jpg'
+				contentURL: '/images/authorship_certificate.png'
 			},
 			{
 				position: 'top',
 				contentType: 'text',
-				content: 'Modular programming is used to break large applications into smaller blocks of manageable code. Module based coding eases the effort for maintenance and increases reusability. However, managing dependencies between modules is a major concern developers face throughout the application development process. RequireJS is one of the most popular frameworks around for managing dependencies between modules. This tutorial examines the need for modularized code, and shows how RequireJS can help.'
+				contentURL: '/text_files/myInfoTop.txt'
 			},
 			{
 				position: 'bottom',
 				contentType: 'text',
-				contentURL: 'sample.txt'
+				contentURL: '/text_files/myInfoBottom.txt'
 			}
 		]
 	};
