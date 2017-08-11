@@ -54,9 +54,7 @@ PerspectiveBoxConstructor = function ( params ) {
 			window.CustomEvent = function ( eventType, eventDetails ) {
 				var newEvent = document.createEvent ( 'Event' );
 				newEvent.initEvent ( eventType );
-				// if ( eventDetails ) console.log ( eventDetails.details );
 				newEvent.details = eventDetails ? eventDetails.details : null;
-				// console.log ( newEvent );
 				return newEvent;
 			}
 		}
@@ -166,7 +164,7 @@ PerspectiveBoxConstructor.prototype.mc_side = function ( event ) {
 PerspectiveBoxConstructor.prototype.classes = null;
 PerspectiveBoxConstructor.prototype.defineClasses = function () {
 	if ( !this.classPrefix ) {
-		console.warn ( 'Prefix for class names was not defined yet. The prefix will be "garevna"' );
+		console.warn ( 'Prefix for class names was not defined yet. Default prefix will be "garevna"' );
 		this.classPrefix = "garevna";
 	}
 	this.classes = {
