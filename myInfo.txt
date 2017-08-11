@@ -1,0 +1,18 @@
+﻿<div style="text-align:left; position:absolute; top:20px; left:30px;"">
+<b>Irina H. Filippova</b><br>
+Kharkiv, Ukraine<br>
+<hr>
+</div>
+
+<div style="position:absolute; left:5%;right:5%; top:30%;bottom:30%; text-align:center;">
+<h1 style="color:rgba(255,255,255,0.8); text-shadow:2px 2px 2px rgba(0,0,0,0.5);font-size:30px;">JS developer</h1>
+</div>
+
+<div style="position:absolute;bottom:0; left:0;">
+<img src="/buttons/front-end.gif" width="70" />
+</div>
+
+<div style="text-align:right; position:absolute; bottom:30px; right:30px;">
+<hr/>
+<b>Ірина Филиппова</b><br>
+Харків, Україна</div>
